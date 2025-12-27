@@ -27,6 +27,9 @@ jobs:
     - name: Create DB
       run: docker compose up -d
 
+    - name: Show containers
+      run: docker compose ps
+
     - name: Test
       run: go test -v main_test.go 
       
