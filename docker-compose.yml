@@ -9,10 +9,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql
-volumes:
-  pgdata:      
-
+      - pgdata:/var/lib/postgresql   
   pgadmin-compose:
     image: dpage/pgadmin4
     environment:
@@ -23,4 +20,5 @@ volumes:
     depends_on:
       - postgres
  
-
+volumes:
+  pgdata:  
