@@ -56,7 +56,7 @@ jobs:
       id: set_lowercase
       run: echo "LOWER_REPO_NAME=${REPO_NAME_UPPER,,}" >> $GITHUB_ENV
       env:
-        REPO_NAME_UPPER: ${{format('{0}/{1}', github.repository, github.sha) }}
+        REPO_NAME_UPPER: ${{format('{0}.{1}', github.ref_name, github.sha) }}
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v6.0.0
       with:
