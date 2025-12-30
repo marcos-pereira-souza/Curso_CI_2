@@ -17,7 +17,7 @@ jobs:
       DBNAME: root
     strategy:
       matrix:
-        go_version: ['1.16', '1.17', '1.18']
+        go_version: [ '1.18']
         os: ['ubuntu-latest']
     runs-on: ${{ matrix.os }}
     steps:
