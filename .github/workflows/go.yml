@@ -39,6 +39,7 @@ jobs:
 
     - name: Test
       run: go test -v main_test.go 
+
       
   
   build:
@@ -51,6 +52,14 @@ jobs:
     - uses: actions/checkout@v3
     - name: Build
       run: go build -v main.go
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v6.0.0
+      with:
+      # Artifact name
+        name: ${{format('{0}:{1}', github.repository, github.ref_name) }}
+        # A file, directory or wildcard pattern that describes what to upload
+        path: main
+                
   docker:
     needs: build
     uses: ./.github/workflows/docker.yaml
