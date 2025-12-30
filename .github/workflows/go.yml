@@ -52,11 +52,16 @@ jobs:
     - uses: actions/checkout@v3
     - name: Build
       run: go build -v main.go
+    - name: Set lowercase variable
+      id: set_lowercase
+      run: echo "LOWER_REPO_NAME=${REPO_NAME_UPPER,,}" >> $GITHUB_ENV
+      env:
+        REPO_NAME_UPPER: ${{format('{0}:{1}', github.repository, github.ref_name) }}
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v6.0.0
       with:
       # Artifact name
-        name: ${{format('{0}:{1}', github.repository, github.ref_name) }}
+        name: ${{ env.LOWER_OWNER }}
         # A file, directory or wildcard pattern that describes what to upload
         path: main
                 
