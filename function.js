@@ -1,34 +1,41 @@
-
-//Exemplo (Set Cookie Javascript): document.cookie = "deployment=green";
-import cf from 'cloudfront';
-
 function handler(event) {
     var request = event.request;
-        
-    // Nome do cookie que define a origem
-    var deploymentCookieName = 'deployment';
-    // Domínios das origens
-    var greenOrigin = 'nf2-mobile-green.s3.us-east-1.amazonaws.com';
-    var blueOrigin = 'nf2-mobile-blue.s3.us-east-1.amazonaws.com';
     
-    // default (blue)
-    cf.updateRequestOrigin({
-        "domainName": blueOrigin
-    });
+    const deploymentCookieName = 'deployment';
 
-    request.headers['origin'] = { value: "https://" + blueOrigin };
+    const baseUrlBlue = "https://mobilepf-blue.cloud.itau.com.br";
+    const baseUrlGreen = "https://mobilepf-green.cloud.itau.com.br";
 
-    if (hasValidDeploymentCookie(request.cookies[deploymentCookieName], "green")) {
-        cf.updateRequestOrigin({
-            "domainName": greenOrigin
-        });
+    let redirectUrl = hasCookieValue(request.cookies[deploymentCookieName], 'green') ? baseUrlGreen : baseUrlBlue;
 
-        request.headers['origin'] = { value: "https://" + greenOrigin };
-    }
+    redirectUrl += replacePrefixRolloutService(request.uri);
 
-    return request;
+    if (Object.keys(request.querystring).length) {
+        let qs = [];
+        for (let key in request.querystring) {
+            if (request.querystring[key].multiValue) {
+                request.querystring[key].multiValue.forEach(mv => qs.push(key + "=" + mv.value));
+            } else {
+                qs.push(key + "=" + request.querystring[key].value);
+            }
+        }
+    
+        redirectUrl += '?' + qs.join('&');
+    }  
+         
+    return {
+        statusCode: 302,
+        statusDescription: 'Found',
+        headers:  {
+            "location": { "value": redirectUrl } 
+        }
+    };
 }
 
-function hasValidDeploymentCookie(deploymentCookie, deployment) {
-    return (deploymentCookie && deploymentCookie.value === deployment)
+function hasCookieValue(cookie, expectedValue) {
+    return cookie && cookie.value === expectedValue;
+}
+
+function replacePrefixRolloutService(uri) {
+    return uri.replace('/webview/rs/', '/webview/');
 }
