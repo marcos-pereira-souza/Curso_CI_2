@@ -10,7 +10,7 @@ function handler(event) {
 
     redirectUrl += replacePrefixRolloutService(request.uri);
 
-    if (Object.keys(request.querystring).length) {
+    if (request.querystring && Object.keys(request.querystring).length > 0) {
         let qs = [];
         for (let key in request.querystring) {
             if (request.querystring[key].multiValue) {
